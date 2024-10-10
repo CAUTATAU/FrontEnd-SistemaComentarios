@@ -1,0 +1,51 @@
+<div class="comment-section">
+  <div class="user-info" *ngIf="loggedUser">
+    <p>Bem-vindo, {{ loggedUser.Name }}!</p>
+    <p>Função: {{ loggedUser.role }}</p>
+  </div>
+
+  <div class="new-comment">
+    <textarea placeholder="Adicione um comentário..." [(ngModel)]="newComment"></textarea>
+
+    <div class="visibility-options">
+      <label>
+        <input type="checkbox" [(ngModel)]="allowReplies" /> Permitir Respostas
+      </label>
+
+      <select [(ngModel)]="selectedVisibility">
+        <option value="TODOS">Visibilidade: Todos</option>
+        <option value="ADM">Visibilidade: Administradores</option>
+        <option value="SIGNATARIOS">Visibilidade: Signatários</option>
+      </select>
+    </div>
+
+    <button (click)="addComment()">Comentar</button>
+  </div>
+
+  <div class="comments-list">
+    <div *ngFor="let comment of comments" class="comment">
+      <div class="comment-header">
+        <i class="fa-solid fa-user"></i>
+        {{ comment.author }} - {{ comment.date | date:'short' }} ({{ comment.visibility }})
+      </div>
+      <div class="comment-body">{{ comment.text }}</div>
+
+      <button *ngIf="comment.allowReplies" (click)="toggleReplyInput(comment)">
+        <i class="fa fa-reply"></i> Responder
+      </button>
+
+      <div *ngIf="comment.showReplyInput" class="reply-input">
+        <textarea [(ngModel)]="comment.replyText" placeholder="Responder..."></textarea>
+        <button (click)="replyToComment(comment)">Enviar</button>
+      </div>
+
+      <div *ngFor="let reply of comment.replies" class="reply">
+        <div class="reply-header">
+          <i class="fa-solid fa-user"></i>
+          {{ reply.author }} - {{ reply.date | date:'short' }} ({{ reply.visibility }})
+        </div>
+        <div class="reply-body">{{ reply.text }}</div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<div class="register-container">
+  <h2>Registro de Usuário</h2>
+  <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+  <input type="text" [(ngModel)]="userName" placeholder="Nome do Usuário" />
+  <select [(ngModel)]="userRole">
+    <option value="SIGNATARIO">SIGNATARIO</option>
+    <option value="ADM">ADM</option>
+  </select>
+  <button (click)="register()">Registrar</button>
+</div>

@@ -1,0 +1,12 @@
+<!-- src/app/features/login/login.component.html -->
+<div class="login-container">
+  <h2>Login</h2>
+  <input type="text" placeholder="Nome do Usuário" [(ngModel)]="name" />
+  <div class="button-group">
+    <button (click)="login()">Login</button>
+    <button (click)="navigateToRegister()">Cadastro</button>
+  </div>
+  <div *ngIf="errorMessage" class="error-message">
+    {{ errorMessage }}
+  </div>
+</div>
