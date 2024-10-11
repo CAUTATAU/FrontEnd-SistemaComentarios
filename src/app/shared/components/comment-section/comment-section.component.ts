@@ -83,15 +83,15 @@ export class CommentSectionComponent implements OnInit {
     );
   }
 
-  deleteComment(commentId: number){
+  deleteComment(commentId: number) {
     this.commentService.deleteComment(commentId).subscribe(
       () => {
-        this.comments = this.comments.filter(comment => comment.id !== commentId)
+        this.comments = this.comments.filter(comment => comment.id !== commentId);
       },
       (error) => {
-        console.error('Erro ao deletar comentario', error)
+        console.error('Erro ao deletar comentario', error);
       }
-    )
+    );
   }
 
   editComment(comment: Comment) {
@@ -105,9 +105,9 @@ export class CommentSectionComponent implements OnInit {
     };
 
     this.commentService.editComment(comment.id, updatedComment).subscribe(
-      response=> {
-        const index = this.comments.findIndex(c=> c.id === comment.id);
-        if(index!== -1){
+      response => {
+        const index = this.comments.findIndex(c => c.id === comment.id);
+        if (index !== -1) {
           this.comments[index].text = comment.newContent; 
           this.comments[index].editing = false;
         }
@@ -115,7 +115,6 @@ export class CommentSectionComponent implements OnInit {
       error => {
         console.error('Erro ao atualizar o comentário', error);
       });
-    
   }
 
   toggleReplyInput(comment: Comment) {
@@ -169,5 +168,16 @@ export class CommentSectionComponent implements OnInit {
         console.error('Erro ao responder comentário', error);
       }
     );
+  }
+
+  isCommentVisible(comment: Comment): boolean {
+    if (comment.visibility === 'TODOS') {
+      return true; 
+    } else if (comment.visibility === 'ADM') {
+      return this.loggedUser?.role === 'ADM'; 
+    } else if (comment.visibility === 'SIGNATARIOS') {
+      return this.loggedUser?.role === 'SIGNATARIO'; 
+    }
+    return false; 
   }
 }

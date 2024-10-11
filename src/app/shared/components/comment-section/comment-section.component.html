@@ -23,37 +23,40 @@
   </div>
 
   <div class="comments-list">
-    <div *ngFor="let comment of comments" class="comment">
-      <div class="comment-header">
-        <i class="fa-solid fa-user"></i>
-        {{ comment.author }} - {{ comment.date | date:'short' }} ({{ comment.visibility }})
-      </div>
-      <div *ngIf="!comment.editing">{{ comment.text }}</div>
-      
-      <div *ngIf="comment.editing">
-        <textarea [(ngModel)]="comment.newContent"></textarea>
-        <button (click)="editComment(comment)">Salvar</button>
-        <button (click)="toggleEditMode(comment)">Cancelar</button>
-      </div>
-
-      <button *ngIf="loggedUser?.Name === comment.author" (click)="toggleEditMode(comment)">Editar</button>
-      <button *ngIf="loggedUser.Name === comment.author"  (click)="deleteComment(comment.id)">Deletar</button>
-      <button *ngIf="comment.allowReplies" (click)="toggleReplyInput(comment)">
-        <i class="fa fa-reply"></i> Responder
-      </button>
-
-      <div *ngIf="comment.showReplyInput" class="reply-input">
-        <textarea [(ngModel)]="comment.replyText" placeholder="Responder..."></textarea>
-        <button (click)="replyToComment(comment)">Enviar</button>
-      </div>
-
-      <div *ngFor="let reply of comment.replies" class="reply">
-        <div class="reply-header">
+    <ng-container *ngFor="let comment of comments">
+      <div *ngIf="isCommentVisible(comment)" class="comment">
+        <div class="comment-header">
           <i class="fa-solid fa-user"></i>
-          {{ reply.author }} - {{ reply.date | date:'short' }} ({{ reply.visibility }})
+          {{ comment.author }} - {{ comment.date | date:'short' }} ({{ comment.visibility }})
         </div>
-        <div class="reply-body">{{ reply.text }}</div>
+        
+        <div *ngIf="!comment.editing">{{ comment.text }}</div>
+
+        <div *ngIf="comment.editing">
+          <textarea [(ngModel)]="comment.newContent"></textarea>
+          <button (click)="editComment(comment)">Salvar</button>
+          <button (click)="toggleEditMode(comment)">Cancelar</button>
+        </div>
+
+        <button *ngIf="loggedUser?.Name === comment.author" (click)="toggleEditMode(comment)">Editar</button>
+        <button *ngIf="loggedUser?.Name === comment.author" (click)="deleteComment(comment.id)">Deletar</button>
+        <button *ngIf="comment.allowReplies" (click)="toggleReplyInput(comment)">
+          <i class="fa fa-reply"></i> Responder
+        </button>
+
+        <div *ngIf="comment.showReplyInput" class="reply-input">
+          <textarea [(ngModel)]="comment.replyText" placeholder="Responder..."></textarea>
+          <button (click)="replyToComment(comment)">Enviar</button>
+        </div>
+
+        <div *ngFor="let reply of comment.replies" class="reply">
+          <div class="reply-header">
+            <i class="fa-solid fa-user"></i>
+            {{ reply.author }} - {{ reply.date | date:'short' }} ({{ reply.visibility }})
+          </div>
+          <div class="reply-body">{{ reply.text }}</div>
+        </div>
       </div>
-    </div>
+    </ng-container>
   </div>
 </div>
