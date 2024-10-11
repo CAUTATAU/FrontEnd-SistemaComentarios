@@ -14,7 +14,7 @@ export class CommentSectionComponent implements OnInit {
   newComment: string = '';
   allowReplies: boolean = false;
   selectedVisibility: 'TODOS' | 'ADM' | 'SIGNATARIOS' = 'TODOS';
-  loggedUser: User | any; // Mantenha como undefined
+  loggedUser: User | any;
 
   constructor(private commentService: CommentService, private authService: AuthService) {}
 
@@ -44,7 +44,7 @@ export class CommentSectionComponent implements OnInit {
   addComment() {
     if (!this.loggedUser) {
       console.error('Usuário não está logado');
-      return; // Impede execução se loggedUser for undefined
+      return; 
     }
 
     const commentPayload: CommentDTO = {
@@ -76,6 +76,17 @@ export class CommentSectionComponent implements OnInit {
         console.error('Erro ao adicionar comentário', error);
       }
     );
+  }
+
+  deleteComment(commentId: number){
+    this.commentService.deleteComment(commentId).subscribe(
+      () => {
+        this.comments = this.comments.filter(comment => comment.id !== commentId)
+      },
+      (error) => {
+        console.error('Erro ao deletar comentario', error)
+      }
+    )
   }
 
   toggleReplyInput(comment: Comment) {

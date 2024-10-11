@@ -20,4 +20,8 @@ export class CommentService {
   getComments(): Observable<any> {
     return this.http.get(`${this.apiUrl}/comments`);
   }
+
+  deleteComment(commentId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/comments/${commentId}`)
+  }
 }

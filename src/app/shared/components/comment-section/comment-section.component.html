@@ -29,7 +29,8 @@
         {{ comment.author }} - {{ comment.date | date:'short' }} ({{ comment.visibility }})
       </div>
       <div class="comment-body">{{ comment.text }}</div>
-
+      <button *ngIf="loggedUser && loggedUser.Name === comment.author"
+        (click)="deleteComment(comment.id)">Deletar</button>
       <button *ngIf="comment.allowReplies" (click)="toggleReplyInput(comment)">
         <i class="fa fa-reply"></i> Responder
       </button>
