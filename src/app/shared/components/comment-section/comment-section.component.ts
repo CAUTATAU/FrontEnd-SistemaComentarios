@@ -3,6 +3,7 @@ import { Comment } from '../../../core/models/comment.model';
 import { CommentDTO } from '../../../core/models/commentDTO.model';
 import { CommentService } from '../../../core/services/comment.service';
 import { AuthService, User } from '../../../core/services/auth.Service';
+import { EditCommentDTO } from 'src/app/core/models/editCommentDTO.model';
 
 @Component({
   selector: 'app-comment-section',
@@ -36,7 +37,9 @@ export class CommentSectionComponent implements OnInit {
         allowReplies: comment.allowReplies,
         replies: comment.replies || [],
         showReplyInput: false,
-        replyText: ''
+        replyText: '',
+        editing: false, 
+        newContent: ''
       }));
     });
   }
@@ -48,7 +51,7 @@ export class CommentSectionComponent implements OnInit {
     }
 
     const commentPayload: CommentDTO = {
-      userId: this.loggedUser.id, // Acessa id
+      userId: this.loggedUser.id, 
       conteudo: this.newComment,
       commentVisibility: this.selectedVisibility,
       allowReplies: this.allowReplies,
@@ -59,7 +62,7 @@ export class CommentSectionComponent implements OnInit {
       (response) => {
         const newComment: Comment = {
           id: response.id,
-          author: this.loggedUser.Name, // Acessa Name
+          author: this.loggedUser.Name, 
           date: new Date(response.createdAt),
           visibility: response.commentVisibility,
           text: response.conteudo,
@@ -67,7 +70,9 @@ export class CommentSectionComponent implements OnInit {
           replies: [],
           showReplyInput: false,
           replyText: '',
-          answerOf: 0
+          answerOf: 0,
+          editing: false, 
+          newContent: ''
         };
         this.comments.push(newComment);
         this.newComment = '';
@@ -89,23 +94,52 @@ export class CommentSectionComponent implements OnInit {
     )
   }
 
+  editComment(comment: Comment) {
+    if (!this.loggedUser) {
+      console.error('Usuário não está logado');
+      return;
+    }
+
+    const updatedComment: EditCommentDTO = {
+      conteudo: comment.newContent // Envia o novo conteúdo para a atualização
+    };
+
+    this.commentService.editComment(comment.id, updatedComment).subscribe(
+      response=> {
+        const index = this.comments.findIndex(c=> c.id === comment.id);
+        if(index!== -1){
+          this.comments[index].text = comment.newContent; 
+          this.comments[index].editing = false;
+        }
+      },
+      error => {
+        console.error('Erro ao atualizar o comentário', error);
+      });
+    
+  }
+
   toggleReplyInput(comment: Comment) {
     comment.showReplyInput = !comment.showReplyInput;
+  }
+
+  toggleEditMode(comment: Comment) {
+    comment.editing = !comment.editing;
+    comment.newContent = comment.text; 
   }
 
   replyToComment(comment: Comment) {
     if (!this.loggedUser) {
       console.error('Usuário não está logado');
-      return; // Impede execução se loggedUser for undefined
+      return; 
     }
 
     if (!comment.replyText) {
       console.error('Texto da resposta não pode estar vazio');
-      return; // Impede execução se o texto da resposta estiver vazio
+      return; 
     }
 
     const replyPayload: CommentDTO = {
-      userId: this.loggedUser.id, // Acessa id
+      userId: this.loggedUser.id, 
       conteudo: comment.replyText,
       commentVisibility: comment.visibility,
       allowReplies: false,
@@ -116,7 +150,7 @@ export class CommentSectionComponent implements OnInit {
       (response) => {
         const reply: Comment = {
           id: response.id,
-          author: this.loggedUser.Name, // Acessa Name
+          author: this.loggedUser.Name, 
           date: new Date(response.createdAt),
           visibility: response.commentVisibility,
           text: response.conteudo,
@@ -124,10 +158,12 @@ export class CommentSectionComponent implements OnInit {
           replies: [],
           showReplyInput: false,
           replyText: '',
-          answerOf: 0
+          answerOf: 0,
+          editing: false, 
+          newContent: ''
         };
         comment.replies.push(reply);
-        comment.replyText = ''; // Limpa o campo de resposta
+        comment.replyText = ''; 
       },
       (error) => {
         console.error('Erro ao responder comentário', error);

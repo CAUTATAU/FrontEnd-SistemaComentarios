@@ -28,9 +28,16 @@
         <i class="fa-solid fa-user"></i>
         {{ comment.author }} - {{ comment.date | date:'short' }} ({{ comment.visibility }})
       </div>
-      <div class="comment-body">{{ comment.text }}</div>
-      <button *ngIf="loggedUser && loggedUser.Name === comment.author"
-        (click)="deleteComment(comment.id)">Deletar</button>
+      <div *ngIf="!comment.editing">{{ comment.text }}</div>
+      
+      <div *ngIf="comment.editing">
+        <textarea [(ngModel)]="comment.newContent"></textarea>
+        <button (click)="editComment(comment)">Salvar</button>
+        <button (click)="toggleEditMode(comment)">Cancelar</button>
+      </div>
+
+      <button *ngIf="loggedUser?.Name === comment.author" (click)="toggleEditMode(comment)">Editar</button>
+      <button *ngIf="loggedUser.Name === comment.author"  (click)="deleteComment(comment.id)">Deletar</button>
       <button *ngIf="comment.allowReplies" (click)="toggleReplyInput(comment)">
         <i class="fa fa-reply"></i> Responder
       </button>
